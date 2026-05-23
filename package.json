@@ -13,6 +13,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "exprexx": "^1.0.0"
+    "exprexx": "^1.0.0",
+    "mongodb": "^7.2.0"
   }
 }
