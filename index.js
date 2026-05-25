@@ -1,12 +1,16 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.MONGO_URI;
 
-
 const PORT = process.env.PORT;
+
+app.use(cors());
+app.use(express.json());
+
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -20,16 +24,32 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const db = await client.db('nex-drive');
+    const carsCollection = db.collection('cars');
+    
+
+    app.post('/cars', async (req, res) => {
+      const carData = req.body;
+      console.log('carData', carData);
+        const result = await carsCollection.insertOne(carData);
+        res.send(result);
+    });
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
 
 app.listen(PORT, () => {
     console.log(`Sever running on ${PORT}`);
+})
+
+app.get('/', (req, res) => {
+    res.send('Server is running fine');
 })
