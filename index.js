@@ -27,10 +27,14 @@ async function run() {
     const db = await client.db('nex-drive');
     const carsCollection = db.collection('cars');
     
+    app.get('/cars', async (req, res) => {
+      const result = await carsCollection.find().toArray();
+      res.send(result)
+    })
 
     app.post('/cars', async (req, res) => {
       const carData = req.body;
-      console.log('carData', carData);
+      // console.log('carData', carData);
         const result = await carsCollection.insertOne(carData);
         res.send(result);
     });
