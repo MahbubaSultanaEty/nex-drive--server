@@ -28,7 +28,16 @@ async function run() {
     const carsCollection = db.collection('cars');
     
     app.get('/cars', async (req, res) => {
-      const result = await carsCollection.find().toArray();
+      const { search, type } = req.query;
+      const query={}
+      if (search) {
+        query.carName= {$regex : search, $options: "i"}
+      }
+
+      if (type && type !== "All") {
+        query.carType = type
+      }
+      const result = await carsCollection.find(query).toArray();
       res.send(result)
     })
 
