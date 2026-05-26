@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.MONGO_URI;
 
 const PORT = process.env.PORT;
@@ -47,6 +47,12 @@ async function run() {
         const result = await carsCollection.insertOne(carData);
         res.send(result);
     });
+
+    app.get("/cars/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await carsCollection.findOne({ _id: new ObjectId(id) });
+      res.json(result)
+    })
 
 
     // Send a ping to confirm a successful connection
