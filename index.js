@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
     const db = await client.db('nex-drive');
     const carsCollection = db.collection('cars');
+    const bookingsCollection= db.collection("bookings")
     
     app.get('/cars', async (req, res) => {
       const { search, type } = req.query;
@@ -54,6 +55,17 @@ async function run() {
       res.json(result)
     })
 
+    app.post("/bookings", async (req, res) => {
+      const bookingData = req.body;
+      
+      const result = await bookingsCollection.insertOne(bookingData)
+      res.json(result)
+    })
+
+    app.get("/bookings", async (req, res) => {
+      const result = await bookingsCollection.find().toArray();
+      res.json(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
