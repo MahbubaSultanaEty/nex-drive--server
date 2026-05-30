@@ -30,12 +30,12 @@ const verifyToken = async (req, res, next) => {
   if (!authHeader) {
     return res.status(401).json({message: "Unauthorized"})
   }
-  
+
   const token = authHeader.split(" ")[1];
 
   try {
     const { payload } = await jwtVerify(token, JWKS);
-    console.log(payload);
+    // console.log(payload);
      next()
   } catch (error) {
     return res.status(403).json({message: "Forbidden"})
@@ -64,7 +64,7 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/cars', async (req, res) => {
+    app.post('/cars', verifyToken, async (req, res) => {
       const carData = req.body;
       // console.log('carData', carData);
         const result = await carsCollection.insertOne(carData);
@@ -77,44 +77,45 @@ async function run() {
       res.json(result)
     })
 
-    app.post("/bookings", async (req, res) => {
+    app.post("/bookings", verifyToken, async (req, res) => {
       const bookingData = req.body;
       
       const result = await bookingsCollection.insertOne(bookingData)
       res.json(result)
     })
 
-    app.get("/bookings", async (req, res) => {     
+    app.get("/bookings", verifyToken, async (req, res) => {     
       const result = await bookingsCollection.find().toArray();
       res.json(result)
     })
 
-    app.get("/bookings/:userId", async (req, res) => {
+    app.get("/bookings/:userId", verifyToken, async (req, res) => {
       const userId = req.params;
       const result = await bookingsCollection.find({userId: userId.userId}).toArray();
       res.json(result)
     })
 
-    app.delete("/bookings/:bookingId", async (req, res) => {
+    app.delete("/bookings/:bookingId", verifyToken, async (req, res) => {
       const { bookingId } = req.params;
       const result = await bookingsCollection.deleteOne({_id: new ObjectId(bookingId)  });
       res.json(result)
     })
-
-    app.get('/cars/car/:userId', async (req, res) => {
+// my-added-cars
+    app.get('/cars/car/:userId', verifyToken, async (req, res) => {
   const userId = req.params.userId;
   const result = await carsCollection.find({ userId: userId }).toArray();
   res.json(result);
     })
+
     // delete My car
-    app.delete('/cars/:id', async (req, res) => {
+    app.delete('/cars/:id', verifyToken, async (req, res) => {
   const {id} = req.params;
   const result = await carsCollection.deleteOne({_id: new ObjectId(id)});
   res.json(result);
     })
     
     // edit my car
-    app.patch("/cars/:id", async (req, res) => {
+    app.patch("/cars/:id", verifyToken, async (req, res) => {
       const { id } = req.params;
       const updatedData = req.body;
       const result=  carsCollection.updateOne(
